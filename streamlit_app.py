@@ -1,4 +1,4 @@
-import streamlit as st
+   import streamlit as st
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
@@ -51,12 +51,14 @@ def generate_pdf(label, prob, grade, feedback, overlay_image):
     for i, line in enumerate(feedback_lines):
         c.drawString(60, height - 190 - i*15, line)
 
-    # Add Grad-CAM image
+    # Save Grad-CAM image using PIL instead of cv2.imwrite
     img_path = os.path.join(tempfile.gettempdir(), "gradcam_overlay.jpg")
-    cv2.imwrite(img_path, overlay_image)
-    c.drawImage(img_path, 50, height - 450, width=300, height=200)
+    overlay_pil = Image.fromarray(cv2.cvtColor(overlay_image, cv2.COLOR_BGR2RGB))
+    overlay_pil.save(img_path)
 
+    c.drawImage(img_path, 50, height - 450, width=300, height=200)
     c.save()
+
     return temp_file.name
 
 # UI Setup
@@ -116,7 +118,7 @@ if uploaded_file is not None:
         st.error("⚠️ The model is uncertain about the embryo's viability.")
 
     # Grad-CAM Visualization
-    st.markdown("### 🧠 Grad-CAM: AI Decision Explanation")
+    st.markdown("### Grad-CAM: AI Decision Explanation")
     heatmap = gradcam.generate(input_tensor)
     img = np.array(image.resize((224, 224)))
     heatmap = cv2.resize(heatmap, (img.shape[1], img.shape[0]))
@@ -134,3 +136,4 @@ if uploaded_file is not None:
             file_name="embryo_report.pdf",
             mime="application/pdf"
         )
+
