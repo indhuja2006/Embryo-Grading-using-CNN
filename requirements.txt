@@ -1,0 +1,8 @@
+streamlit
+flask
+torch
+torchvision
+Pillow
+numpy
+opencv-python
+reportlab
